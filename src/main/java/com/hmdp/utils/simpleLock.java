@@ -14,17 +14,18 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @description: TODO  简单锁的实现
  * @date 2024/4/19 16:19
+ *
  */
-public class simpleLock implements ILock{
+public class simpleLock implements ILock {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
     //业务
     private String name;
-    private static final String key_prefix="Lock:";
+    private static final String key_prefix = "Lock:";
     //生成不同的uuid
-    private static final String id_prefix= UUID.randomUUID().toString(true)+"-";
+    private static final String id_prefix = UUID.randomUUID().toString(true) + "-";
 
     public simpleLock(StringRedisTemplate stringRedisTemplate, String name) {
         this.stringRedisTemplate = stringRedisTemplate;
@@ -35,7 +36,8 @@ public class simpleLock implements ILock{
     private static final DefaultRedisScript<Long> Un_Script;
 
     static {
-        Un_Script=new DefaultRedisScript();
+
+        Un_Script = new DefaultRedisScript();
         Un_Script.setLocation(new ClassPathResource("unlock.lua"));
         Un_Script.setResultType(Long.class);
     }
@@ -44,23 +46,24 @@ public class simpleLock implements ILock{
     @Override
     public boolean tryLock(Long timeOut) {
         //获取线程标识   key为lock:业务名称  value为 线程的id
-        String ThreadId =id_prefix+ Thread.currentThread().getId();
+        String ThreadId = id_prefix + Thread.currentThread().getId();
 
 
-            Boolean isLock = stringRedisTemplate.opsForValue()
-                    .setIfAbsent(key_prefix + name, ThreadId, timeOut, TimeUnit.SECONDS);
+        Boolean isLock = stringRedisTemplate.opsForValue()
+                .setIfAbsent(key_prefix + name, ThreadId, timeOut, TimeUnit.SECONDS);
 
-            return Boolean.TRUE.equals(isLock);
+        return Boolean.TRUE.equals(isLock);
 
     }
+
     @Override
     public void unLock() {
 
         stringRedisTemplate
                 .execute(Un_Script,
                         Collections.singletonList(key_prefix + name),
-                        id_prefix+ Thread.currentThread().getId()
-                        );
+                        id_prefix + Thread.currentThread().getId()
+                );
     }
 
 

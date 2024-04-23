@@ -86,10 +86,6 @@ class HmDianPingApplicationTests {
                 bufferedWriter.write(text);
             }
 
-
-
         }
-
-
     }
 }

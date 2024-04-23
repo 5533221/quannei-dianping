@@ -21,7 +21,7 @@ public class RedisConfig {
         //config.useClusterServers();
         Config config = new Config();
         //配置单一
-        config.useSingleServer().setAddress("redis://192.168.183.135:6379");
+        config.useSingleServer().setAddress("redis://192.168.183.139:6379");
 
         return   Redisson.create(config);
     }
